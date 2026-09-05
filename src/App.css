@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@theme {
+
+  /* Paleta de colores */
+  /* --color-letra: #1E293B;
+  --color-bg: #121E3B;
+  --color-secundario: #FFFFFF;
+  --color-botonprincipal: #5B7FFF; */
+  --color-letra: #1C1C1C;
+  --color-letra-secundario: #6B6B6B;
+  --color-bg: #F5EEE6;
+  --color-secundario: #FFFFFF;
+  --color-botonprincipal:  #D25D7F;
+  --color-botonhover:#C14A6E;
+  --color-checkboxtrueorinpt: #7A8450;
+  
+
+
+  /* Fuentes */
+  --font-principal: 'Montserrat', sans-serif;
+}
