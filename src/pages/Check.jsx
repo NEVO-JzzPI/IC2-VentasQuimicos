@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import Button from '../components/Button';
 import Card from '../components/Card';
+import { useToast } from '../context/ToastContext';
 
 export default function Check() {
     const [now, setNow] = useState(new Date());
     const[isCheckedIn, setIsCheckedIn] = useState(false);
+    const { showToast } = useToast();
 
     useEffect(() => {
         const interval = setInterval(() => setNow(new Date()), 1000);
@@ -21,10 +23,10 @@ export default function Check() {
                 </p>
             </div>
             <div className="flex flex-row gap-6 mt-8">
-                <Button className="mt-4 basis-lg py-5 text-xl bg-checkboxtrueorinpt" disabled={isCheckedIn} onClick={() => { console.log('Entrada'); setIsCheckedIn(true); }}>
+                <Button className="mt-4 basis-lg py-5 text-xl bg-checkboxtrueorinpt" disabled={isCheckedIn} onClick={() => { setIsCheckedIn(true); showToast('Entrada registrada', 'entradas'); }}>
                     Entrada
                 </Button>
-                <Button className="mt-4 basis-lg py-5 text-xl" disabled={!isCheckedIn} onClick={() => { console.log('Salida'); setIsCheckedIn(false); }}>
+                <Button className="mt-4 basis-lg py-5 text-xl" disabled={!isCheckedIn} onClick={() => { setIsCheckedIn(false); showToast('Salida registrada', 'salidas'); }}>
                     Salida
                 </Button>
             </div>

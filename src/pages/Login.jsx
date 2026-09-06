@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -16,19 +17,22 @@ export default function Login() {
     const [loading, setLoading] = useState(false);
 
     const { login } = useAuth();
+    
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
-        e.preventDefault(); 
+        e.preventDefault();
 
         setError(null);   // limpiar error anterior
         setLoading(true);  // petición en proceso
 
         try {
             await login(username, password);
+            
             navigate('/check');  // redirigir a la página de verificación
         } catch (err) {
             setError(err.message);
+            
         } finally {
             setLoading(false);
 }
