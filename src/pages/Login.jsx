@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import Button from '../components/Button';
+import Card from '../components/Card';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+
 
 
 export default function Login() {
@@ -13,8 +16,8 @@ export default function Login() {
     const [loading, setLoading] = useState(false);
 
     const { login } = useAuth();
+    const navigate = useNavigate();
 
-    
     const handleSubmit = async (e) => {
         e.preventDefault(); 
 
@@ -23,7 +26,7 @@ export default function Login() {
 
         try {
             await login(username, password);
-            
+            navigate('/check');  // redirigir a la página de verificación
         } catch (err) {
             setError(err.message);
         } finally {
@@ -32,7 +35,7 @@ export default function Login() {
     };
 
     return (
-        <div className="bg-secundario w-full max-w-md rounded-2xl  p-8 shadow-lg font-principal text-letra space-y-6"> 
+        <Card> 
             <div>
                 <h2 className="text-3xl font-bold">Iniciar Sesión</h2>
                 <p className="mt-2 text-sm">Ingresa tus credenciales para acceder</p>
@@ -79,17 +82,18 @@ export default function Login() {
                     <label htmlFor="remember" className="ml-2 text-sm text-gray-600 select-none">Recordar mi sesión</label>
                 </div>
 
-                {/* Solo se muestra si "error" tiene un mensaje (login falló) */}
+               
                 {error && (
                     <p className="text-red-600 text-sm mb-3.5">{error}</p>
                 )}
 
-                {/* Mientras "loading" es true, el botón se deshabilita y cambia el texto */}
-                <Button type="submit" disabled={loading}>
+                { console.log(loading) }
+                
+                <Button type="submit" disabled={loading} >
                     {loading ? 'Ingresando...' : 'Iniciar Sesión'}
                 </Button>
             </form>
 
-        </div>
+        </Card>
     )
 }
