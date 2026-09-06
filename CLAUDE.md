@@ -15,7 +15,7 @@ There is no test runner configured in this project.
 
 This is a React 19 + Vite 8 SPA scaffold styled with Tailwind CSS 4 (via `@tailwindcss/vite`, not a PostCSS config). Entry point is `src/main.jsx`, which mounts `App` (`src/App.jsx`) into `#root` in `index.html`.
 
-The codebase is currently at the initial template stage: `App.jsx` renders an empty fragment, and `src/index.css` is empty. `src/App.css` still has leftover template styles from `create-vite`. There is no routing, state management, or component structure established yet — these will need to be introduced as features are built.
+`src/index.css` is empty; `src/App.css` holds the Tailwind `@theme` color/font tokens (see palette below) plus leftover template styles from `create-vite`. There is no routing library installed yet — see "Progreso actual" below for what's built so far and what's next.
 
 ESLint config (`eslint.config.js`) uses the flat config format with `@eslint/js` recommended rules, `eslint-plugin-react-hooks`, and `eslint-plugin-react-refresh` (Vite-flavored). It lints `**/*.{js,jsx}` and ignores `dist`.
 
@@ -64,3 +64,24 @@ Definida como `@theme` de Tailwind en `src/App.css`:
 /* Fuentes */
 --font-principal: 'Montserrat', sans-serif;
 ```
+
+## Progreso actual
+
+**Hecho:**
+- `src/components/Button.jsx` — botón reutilizable (soporta `disabled`, `className` extra).
+- `src/pages/Login.jsx` — formulario de login (usuario/contraseña, checkbox "recordar", validación básica de campos requeridos, labels asociados correctamente con `htmlFor`/`id`, estados de `loading`/`error` con feedback visual).
+- `src/services/auth.js` — mock de `login(username, password)` que simula la API Django (delay de 500ms, usuarios de prueba `admin`/`1234` y `empleado`/`1234`, lanza error si las credenciales no coinciden). Reemplazar por la llamada real cuando el backend esté listo, sin tocar componentes.
+- `src/context/AuthContext.jsx` — `AuthProvider` + hook `useAuth()`. Guarda `user` en estado, expone `login()` (llama al servicio y guarda el usuario) y `logout()`.
+- `AuthProvider` ya envuelve `<App />` en `src/main.jsx`.
+- `Login.jsx` ya usa `useAuth().login(...)` en vez de llamar al servicio directo.
+
+**Falta / próximos pasos:**
+1. Probar el flujo completo login → `user` guardado en el Context (ej. mostrar `user` en `App.jsx` temporalmente o vía React DevTools).
+2. Agregar `logout()` a la UI (botón en algún lugar) para poder probar el ciclo completo.
+3. Instalar `react-router-dom` y armar rutas (Login, Dashboard, etc.) — hoy `App.jsx` renderiza `Login` fijo, sin router.
+4. Redirigir a Dashboard tras un login exitoso (una vez exista el router).
+5. Construir pantalla de Dashboard / marcar asistencia (entrada-salida) — el núcleo del MVP.
+6. Pantalla de listado de empleados.
+7. Pantalla de historial/registro de asistencia.
+8. Persistir sesión en `localStorage` si el usuario marcó "Recordar mi sesión" (hoy el checkbox existe en la UI pero no tiene lógica asociada).
+9. Cuando el backend Django esté disponible, reemplazar el mock de `services/auth.js` por la llamada real (fetch/axios a la API), sin modificar `Login.jsx` ni `AuthContext.jsx`.
