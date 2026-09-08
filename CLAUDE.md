@@ -68,20 +68,29 @@ Definida como `@theme` de Tailwind en `src/App.css`:
 ## Progreso actual
 
 **Hecho:**
-- `src/components/Button.jsx` — botón reutilizable (soporta `disabled`, `className` extra).
-- `src/pages/Login.jsx` — formulario de login (usuario/contraseña, checkbox "recordar", validación básica de campos requeridos, labels asociados correctamente con `htmlFor`/`id`, estados de `loading`/`error` con feedback visual).
-- `src/services/auth.js` — mock de `login(username, password)` que simula la API Django (delay de 500ms, usuarios de prueba `admin`/`1234` y `empleado`/`1234`, lanza error si las credenciales no coinciden). Reemplazar por la llamada real cuando el backend esté listo, sin tocar componentes.
-- `src/context/AuthContext.jsx` — `AuthProvider` + hook `useAuth()`. Guarda `user` en estado, expone `login()` (llama al servicio y guarda el usuario) y `logout()`.
-- `AuthProvider` ya envuelve `<App />` en `src/main.jsx`.
-- `Login.jsx` ya usa `useAuth().login(...)` en vez de llamar al servicio directo.
+- `src/components/Button.jsx` — botón reutilizable (soporta `disabled`, `className` extra, `children`; ya trae `bg-botonprincipal` por defecto).
+- `src/components/Card.jsx`, `Toast.jsx`, `ToastContainer.jsx` — UI genérica de soporte (tarjeta contenedora y sistema de notificaciones toast); `ToastContext.jsx` provee `useToast()`.
+- `src/pages/Login.jsx` — formulario de login (usuario/contraseña, checkbox "recordar", validación básica de campos requeridos, labels asociados correctamente con `htmlFor`/`id`, estados de `loading`/`error` con feedback visual). Usa `useAuth().login(...)`.
+- `src/services/auth.js` — mock de `login(username, password)` que simula la API Django (delay de 500ms, usuarios de prueba `admin`/`1234` y `empleado`/`1234` con campo `rol`, lanza error si las credenciales no coinciden). Reemplazar por la llamada real cuando el backend esté listo, sin tocar componentes.
+- `src/context/AuthContext.jsx` — `AuthProvider` + hook `useAuth()`. Expone `user`, `login()`, `logout()`, y estado de asistencia: `isChecking` (bool), `checking()` (marca entrada), `stopChecking()` (marca salida). `logout()` resetea `isChecking` a `false` para que la siguiente sesión deba volver a marcar.
+- `react-router-dom` instalado y en uso. `BrowserRouter` envuelve `<AuthProvider><App /></AuthProvider>` en `src/main.jsx`.
+- `src/App.jsx` — define las rutas con `<Routes>`/`<Route>`: `/` (Login), `/check` (Check, protegida con `RequireAuth`), `/dashboard` (Dashboard, protegida con `RequireAuth` → `RequireAdmin` → `RequireCheckedIn` anidados).
+- `src/components/Guards.jsx` — guardianes de ruta: `RequireAuth` (redirige a `/` si no hay `user`), `RequireAdmin` (redirige a `/check` si `user?.rol !== 'admin'`), `RequireCheckedIn` (redirige a `/check` si `!isChecking`). Todos usan `<Navigate replace />`.
+- `src/pages/Check.jsx` — pantalla de marcar asistencia (reloj en vivo, botones Entrada/Salida que llaman `checking()`/`stopChecking()` del context + toasts). Al marcar Entrada, si `user.rol === 'admin'`, navega automáticamente a `/dashboard` vía `useNavigate()`.
+- `src/pages/Dashboard.jsx` — placeholder ("Bienvenido al Dashboard"), aún no usa `Sidebar` ni tiene el layout del wireframe (gráficos + tabla).
+- `src/components/CollapsibleMenu.jsx` — sección colapsable reutilizable (`title` + `items: string[]`), usada para "Reportes".
+- `src/components/SlideBar.jsx` — sidebar del dashboard: `CollapsibleMenu` para "Reportes" (R. atrasos / R. Inasistencia / R. Salidas ant.), link `NavLink` a `/empleados` para "G. Empleados" (decisión tomada: el CRUD de empleados vive en la página `/empleados`, no como sub-items en el sidebar), y botón "Cerrar Sesión" (`logout()` + `navigate('/')`).
+
+**Bug conocido pendiente de arreglar:**
+- `src/components/SlideBar.jsx` usa `<NavLink>` (línea ~20) pero solo importa `useNavigate` de `react-router-dom` en la línea 1 — falta agregar `NavLink` al import (`import { NavLink, useNavigate } from 'react-router-dom'`). Actualmente esto rompe en runtime.
 
 **Falta / próximos pasos:**
-1. Probar el flujo completo login → `user` guardado en el Context (ej. mostrar `user` en `App.jsx` temporalmente o vía React DevTools).
-2. Agregar `logout()` a la UI (botón en algún lugar) para poder probar el ciclo completo.
-3. Instalar `react-router-dom` y armar rutas (Login, Dashboard, etc.) — hoy `App.jsx` renderiza `Login` fijo, sin router.
-4. Redirigir a Dashboard tras un login exitoso (una vez exista el router).
-5. Construir pantalla de Dashboard / marcar asistencia (entrada-salida) — el núcleo del MVP.
-6. Pantalla de listado de empleados.
-7. Pantalla de historial/registro de asistencia.
-8. Persistir sesión en `localStorage` si el usuario marcó "Recordar mi sesión" (hoy el checkbox existe en la UI pero no tiene lógica asociada).
-9. Cuando el backend Django esté disponible, reemplazar el mock de `services/auth.js` por la llamada real (fetch/axios a la API), sin modificar `Login.jsx` ni `AuthContext.jsx`.
+1. Arreglar el import faltante de `NavLink` en `SlideBar.jsx` (ver bug arriba).
+2. Integrar `SlideBar` dentro de `Dashboard.jsx` (layout: sidebar a la izquierda + contenido a la derecha).
+3. Construir el contenido del Dashboard según el wireframe: zona "Datos" (placeholder de gráficos de barra/línea — evaluar librería liviana tipo `recharts` si se necesitan gráficos reales), y "Tabla" con columnas Nombre/Cargo/Asistencia. Sugerido: un componente `AsistenciaBadge.jsx` en `components/` para los pills de estado (Presente/Ausente/S. Anticipada) con colores de la paleta, reusable también en reportes futuros.
+4. Crear la ruta `/empleados` (placeholder inicial) y su página `src/pages/Empleados.jsx` con el CRUD de empleados (listar/crear/editar/eliminar) — decidir si va protegida con `RequireAdmin` igual que `/dashboard`.
+5. Crear las 3 páginas/rutas de "Reportes" (R. atrasos, R. Inasistencia, R. Salidas ant.) o al menos placeholders, y decidir si `CollapsibleMenu` debe recibir items como `{label, to}` en vez de strings planos para poder navegar con `NavLink` (hoy son solo texto sin link).
+6. Pantalla de historial/registro de asistencia (si es distinta a los reportes anteriores).
+7. Persistir sesión en `localStorage` si el usuario marcó "Recordar mi sesión" (hoy el checkbox existe en la UI pero no tiene lógica asociada).
+8. Decidir y documentar si `checking()`/`stopChecking()` deberían dejar de ser `async` (no tienen ningún `await` adentro, es innecesario tal como están).
+9. Cuando el backend Django esté disponible, reemplazar el mock de `services/auth.js` por la llamada real (fetch/axios a la API), sin modificar `Login.jsx` ni `AuthContext.jsx`. Mismo criterio aplicará a `services/asistencia.js` y `services/empleados.js` cuando se creen para el CRUD y el marcado de asistencia.
