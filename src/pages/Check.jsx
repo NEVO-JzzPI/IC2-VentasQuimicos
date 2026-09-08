@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import { useToast } from '../context/ToastContext';
 
 export default function Check() {
+    
+    const navigate = useNavigate();
     const [now, setNow] = useState(new Date());
-    const[isCheckedIn, setIsCheckedIn] = useState(false);
+    const{  user, login, logout, checking, stopChecking, isChecking } = useAuth(); 
     const { showToast } = useToast();
 
     useEffect(() => {
@@ -23,10 +27,18 @@ export default function Check() {
                 </p>
             </div>
             <div className="flex flex-row gap-6 mt-8">
-                <Button className="mt-4 basis-lg py-5 text-xl bg-checkboxtrueorinpt" disabled={isCheckedIn} onClick={() => { setIsCheckedIn(true); showToast('Entrada registrada', 'entradas'); }}>
+                <Button className="mt-4 basis-lg py-5 text-xl bg-checkboxtrueorinpt hover:bg-checkboxtrueorinpt/60" disabled={isChecking} 
+                onClick={() =>{
+                    showToast('Entrada registrada', 'entradas'); 
+                    checking();
+                    if (user?.rol === 'admin') navigate('/dashboard');                
+                    }}>
                     Entrada
                 </Button>
-                <Button className="mt-4 basis-lg py-5 text-xl" disabled={!isCheckedIn} onClick={() => { setIsCheckedIn(false); showToast('Salida registrada', 'salidas'); }}>
+                <Button className="mt-4 basis-lg py-5 text-xl hover:bg-botonhover/60" disabled={!isChecking} onClick={() => {  
+                    stopChecking();
+                    
+                    showToast('Salida registrada', 'salidas'); }}>
                     Salida
                 </Button>
             </div>

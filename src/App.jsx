@@ -3,9 +3,8 @@ import { useAuth } from './context/AuthContext.jsx'
 import Login from './pages/Login'
 import Check from './pages/Check'
 import ToastContainer from './components/ToastContainer'
-// Importa aquí tus otras páginas para el redireccionamiento, por ejemplo:
-// import AdminDashboard from './pages/AdminDashboard'
-// import UserDashboard from './pages/UserDashboard'
+import Dashboard from './pages/Dashboard'
+import { RequireAuth, RequireAdmin, RequireCheckedIn } from './components/Guards.jsx'
 
 import './App.css'
 
@@ -20,7 +19,21 @@ function App() {
       <Routes>
        
         <Route path="/" element={<Login />} />
-        <Route path="/check" element={<Check />} />
+        <Route path="/check" element={
+          <RequireAuth>
+            <Check />
+          </RequireAuth>
+          } />
+        <Route path="/dashboard" element={
+
+            <RequireAuth>
+              <RequireAdmin>
+                <RequireCheckedIn>
+                  <Dashboard />
+                </RequireCheckedIn>
+              </RequireAdmin>
+            </RequireAuth>
+          } />
 
        
         

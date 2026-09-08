@@ -7,6 +7,8 @@ const AuthContext = createContext(null)
 //el provider que envuelve la app y provee el contexto
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
+  
+  const [isChecking, setIsChecking] = useState(false)
 
   const login = async (username, password) => {
     const { user } = await loginService(username, password)
@@ -15,9 +17,19 @@ export function AuthProvider({ children }) {
 
   const logout = () => {
     setUser(null)
+    setIsChecking(false)
   }
 
-  const value = { user, login, logout }
+  
+  const checking = async () => {
+    setIsChecking(true)
+  }
+  
+  const stopChecking = async () => {
+    setIsChecking(false)
+  }
+
+  const value = { user, login, logout, checking, stopChecking, isChecking }
 
   return (
     <AuthContext.Provider value={value}>
@@ -26,7 +38,7 @@ export function AuthProvider({ children }) {
   )
 }
 
-//el hook para acceder
+//hook para acceder
 export function useAuth() {
   const context = useContext(AuthContext)
   if (!context) {
@@ -34,3 +46,5 @@ export function useAuth() {
   }
   return context
 }
+
+
