@@ -18,6 +18,7 @@ export default function Check() {
     }, []);
 
     return(
+        <div className="flex min-h-screen items-center justify-center">
         <Card className="max-w-3xl text-center">
 
             <div>
@@ -44,5 +45,6 @@ export default function Check() {
             </div>
 
         </Card>
+        </div>
     )
 }

@@ -13,7 +13,7 @@ function App() {
   console.log('Usuario actual:', user)
 
   return (
-    <div className="bg-bg w-full h-screen flex items-center justify-center">
+    <div className="bg-bg w-full min-h-screen">
       <ToastContainer />
       {/* // contenedor de rutas */}
       <Routes>

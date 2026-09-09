@@ -39,7 +39,8 @@ export default function Login() {
     };
 
     return (
-        <Card> 
+        <div className="flex min-h-screen items-center justify-center">
+        <Card>
             <div>
                 <h2 className="text-3xl font-bold">Iniciar Sesión</h2>
                 <p className="mt-2 text-sm">Ingresa tus credenciales para acceder</p>
@@ -99,5 +100,6 @@ export default function Login() {
             </form>
 
         </Card>
+        </div>
     )
 }

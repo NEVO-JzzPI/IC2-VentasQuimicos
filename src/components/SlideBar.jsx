@@ -23,7 +23,7 @@ export default function SlideBar(){
                             `block font-principal ${isActive ? 'text-botonprincipal font-bold' : 'text-letra'}`
                         }
                         >
-                            G. Empleados
+                            Gestion de Empleados
                     </NavLink>
                 </div>
                 <Button onClick={handleLogout}>
