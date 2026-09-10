@@ -1,4 +1,4 @@
-import SlideBar from "../components/SlideBar";
+import Navbar from "../components/Navbar";
 import Card from "../components/Card"
 import AsistenciaBadge from "../components/AsistenciaBadge";
 
@@ -11,9 +11,9 @@ const empleados = [
 export default function Dashboard() {
     return (
 
-        <div className="flex min-h-screen bg-bg">
-            <SlideBar/>
-            <main  className="flex-1 p-6">
+        <div className="min-h-screen bg-bg">
+            <Navbar/>
+            <main  className="p-6">
                 <div className="grid grid-cols-2 gap-4">
                         <Card> <h1>GRAFICO DE BARRAS </h1></Card>
                         <Card> <h1>GRAFICO DE LINEAS </h1></Card>
