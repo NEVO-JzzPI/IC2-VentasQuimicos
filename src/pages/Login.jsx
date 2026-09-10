@@ -19,6 +19,7 @@ export default function Login() {
     const { login } = useAuth();
     
     const navigate = useNavigate();
+    const { showToast } = useToast();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -63,7 +64,13 @@ export default function Login() {
                 <div className="">
                     <div className="flex items-center justify-between mb-1">
                         <label className="text-sm font-medium " htmlFor="password">Contraseña</label>
-                        <a href="#" className="text-xs  hover:underline">¿La olvidaste?</a>
+                        <button
+                            type="button"
+                            className="text-xs  hover:underline"
+                            onClick={() => showToast(' Por Favor Llama al 900-800 o habla con tu encargado.')}
+                        >
+                            ¿La olvidaste?
+                        </button>
                     </div>
                     <input 
                         id="password"
