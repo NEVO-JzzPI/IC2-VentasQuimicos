@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import Button from '../components/Button';
 import Card from '../components/Card';
-import { useAuth } from '../context/AuthContext';
-import { useToast } from '../context/ToastContext';
+import { useAuth } from '../hooks/useAuth';
+import { useToast } from '../hooks/useToast';
 import { useNavigate } from 'react-router-dom';
 
 

@@ -1,8 +1,6 @@
-import { createContext, useContext, useState } from 'react'
+import { useState } from 'react'
 import { login as loginService } from '../services/auth'
-
-//null por defecto
-const AuthContext = createContext(null)
+import { AuthContext } from './auth-context.js'
 
 //el provider que envuelve la app y provee el contexto
 export function AuthProvider({ children }) {
@@ -36,15 +34,6 @@ export function AuthProvider({ children }) {
       {children}
     </AuthContext.Provider>
   )
-}
-
-//hook para acceder
-export function useAuth() {
-  const context = useContext(AuthContext)
-  if (!context) {
-    throw new Error('useAuth debe usarse dentro de un AuthProvider')
-  }
-  return context
 }
 
 

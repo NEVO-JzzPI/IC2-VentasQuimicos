@@ -3,7 +3,7 @@ import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
 import Navbar from '../components/Navbar'
 import Card from '../components/Card'
 import Button from '../components/Button'
-import { useToast } from '../context/ToastContext'
+import { useToast } from '../hooks/useToast'
 import { ListEmp, CreateEmp, UpdateEmp, DeleteEmp } from '../services/emp'
 
 const FORM_VACIO = { usuario: '', nombre: '', direccion: '', cargo: '' }

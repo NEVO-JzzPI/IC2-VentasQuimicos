@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
 import Card from '../components/Card';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '../hooks/useToast';
 
 export default function Check() {
     
     const navigate = useNavigate();
     const [now, setNow] = useState(new Date());
-    const{  user, login, logout, checking, stopChecking, isChecking } = useAuth(); 
+    const{  user, checking, stopChecking, isChecking } = useAuth();
     const { showToast } = useToast();
 
     useEffect(() => {
