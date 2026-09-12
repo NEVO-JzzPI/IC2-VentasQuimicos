@@ -1,16 +1,15 @@
 import { Routes, Route } from 'react-router-dom'
-import { useAuth } from './context/AuthContext.jsx'
 import Login from './pages/Login'
 import Check from './pages/Check'
 import ToastContainer from './components/ToastContainer'
 import Dashboard from './pages/Dashboard'
+import Empleados from './pages/Empleados.jsx'
 import { RequireAuth, RequireAdmin, RequireCheckedIn } from './components/Guards.jsx'
 
 import './App.css'
 
 function App() {
-  const { user } = useAuth()
-  console.log('Usuario actual:', user)
+  
 
   return (
     <div className="bg-bg w-full min-h-screen">
@@ -25,7 +24,6 @@ function App() {
           </RequireAuth>
           } />
         <Route path="/dashboard" element={
-
             <RequireAuth>
               <RequireAdmin>
                 <RequireCheckedIn>
@@ -34,6 +32,14 @@ function App() {
               </RequireAdmin>
             </RequireAuth>
           } />
+          <Route path="/empleados" element={
+            <RequireAuth>
+              <RequireAdmin>
+                <Empleados />
+              </RequireAdmin>
+            </RequireAuth>
+            } 
+          />
 
        
         
