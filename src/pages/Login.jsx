@@ -28,7 +28,7 @@ export default function Login() {
         setLoading(true);  // petición en proceso
 
         try {
-            await login(username, password);
+            await login(username, password, remember);
             
             navigate('/check');  // redirigir a la página de verificación
         } catch (err) {

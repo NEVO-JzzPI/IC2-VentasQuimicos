@@ -4,6 +4,7 @@ import Check from './pages/Check'
 import ToastContainer from './components/ToastContainer'
 import Dashboard from './pages/Dashboard'
 import Empleados from './pages/Empleados.jsx'
+import Reporte from './pages/Reporte.jsx'
 import { RequireAuth, RequireAdmin, RequireCheckedIn } from './components/Guards.jsx'
 
 import './App.css'
@@ -38,7 +39,17 @@ function App() {
                 <Empleados />
               </RequireAdmin>
             </RequireAuth>
-            } 
+            }
+          />
+          <Route path="/reportes/:tipo" element={
+            <RequireAuth>
+              <RequireAdmin>
+                <RequireCheckedIn>
+                  <Reporte />
+                </RequireCheckedIn>
+              </RequireAdmin>
+            </RequireAuth>
+            }
           />
 
        

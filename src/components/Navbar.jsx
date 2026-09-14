@@ -15,11 +15,26 @@ export default function Navbar() {
     return (
         <nav className="flex items-center justify-between h-16 w-full bg-checkboxtrueorinpt/80 px-6">
             <div className="flex items-center gap-6">
-                <CollapsibleMenu title="Reportes" items={['R. atrasos', 'R. Inasistencia', 'R. Salidas ant.']} />
+                <NavLink
+                    to="/dashboard"
+                    className={({ isActive }) =>
+                        `font-principal ${isActive ? 'text-botonprincipal font-bold' : 'text-secundario'}`
+                    }
+                >
+                    Inicio
+                </NavLink>
+                <CollapsibleMenu
+                    title="Reportes"
+                    items={[
+                        { label: 'R. atrasos', to: '/reportes/atrasos' },
+                        { label: 'R. Inasistencia', to: '/reportes/inasistencias' },
+                        { label: 'R. Salidas ant.', to: '/reportes/salidas-anticipadas' },
+                    ]}
+                />
                 <NavLink
                     to="/empleados"
                     className={({ isActive }) =>
-                        `font-principal ${isActive ? 'text-botonprincipal font-bold' : 'text-letra'}`
+                        `font-principal ${isActive ? 'text-botonprincipal font-bold' : 'text-secundario'}`
                     }
                 >
                     Gestion de Empleados

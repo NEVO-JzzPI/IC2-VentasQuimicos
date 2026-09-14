@@ -65,6 +65,19 @@ Definida como `@theme` de Tailwind en `src/App.css`:
 --font-principal: 'Montserrat', sans-serif;
 ```
 
+## Librerías utilizadas
+
+Dependencias de runtime (`package.json` → `dependencies`):
+
+- **react** / **react-dom** (19) — librería de UI base.
+- **react-router-dom** (7) — enrutamiento SPA (`BrowserRouter`, `Routes`, `NavLink`, guards en `Guards.jsx`).
+- **tailwindcss** (4) + **@tailwindcss/vite** — utility CSS, integrado como plugin de Vite (no hay `postcss.config.js`).
+- **@headlessui/react** — primitivos de UI accesibles sin estilos propios; usado para el modal `Dialog`/`DialogPanel`/`DialogTitle` de crear/editar en `Empleados.jsx`.
+- **recharts** — gráficos del Dashboard (`BarChart`/`LineChart` en `Dashboard.jsx`).
+- **@fontsource/montserrat** — fuente Montserrat self-hosted (pesos 400/600/700), importada en `main.jsx`; antes de esto la fuente nunca se cargaba realmente y todo el texto caía al sans-serif del sistema pese a que `App.css` ya definía `--font-principal`.
+
+Herramientas de desarrollo (`devDependencies`): **vite** (8) + `@vitejs/plugin-react` como bundler/dev server, **eslint** (10) + `eslint-plugin-react-hooks` + `eslint-plugin-react-refresh` para lint, y `@types/react`/`@types/react-dom` solo para autocompletado (el proyecto es JS, no TS).
+
 ## Progreso actual
 
 **Hecho:**
@@ -89,14 +102,17 @@ Definida como `@theme` de Tailwind en `src/App.css`:
   - `src/context/AuthContext.jsx` / `ToastContext.jsx` — solo exportan el Provider (`AuthProvider`/`ToastProvider`), importando el contexto desde los archivos de arriba.
   - `src/hooks/useAuth.js` / `src/hooks/useToast.js` — el hook de acceso, importando el contexto directamente (no desde el Provider).
   - Todos los consumidores (`Login`, `Check`, `Empleados`, `Guards`, `SlideBar`, `Navbar`, `ToastContainer`) importan `useAuth`/`useToast` desde `../hooks/...`. `main.jsx` no cambió (sigue importando los Providers desde `src/context/`).
-- `npm run lint` en 0 errores (se limpiaron variables sin usar en `ToastContainer.jsx`, `Check.jsx` y `App.jsx`, además del refactor de hooks de arriba). Detalle completo de esta sesión en `CAMBIOS.md`.
+- `npm run lint` en 0 errores (se limpiaron variables sin usar en `ToastContainer.jsx`, `Check.jsx` y `App.jsx`, además del refactor de hooks de arriba). Detalle completo de esa sesión en `CAMBIOS.md`.
+- `src/services/reportes.js` (nuevo) — mock `ListReporte(tipo)` (delay 500ms) con datos de `atrasos` / `inasistencias` / `salidas-anticipadas`, cada uno con su `titulo`, `columnaExtra` y `campo` a mostrar.
+- `src/pages/Reporte.jsx` (nuevo) + ruta `/reportes/:tipo` en `App.jsx` (protegida `RequireAuth` → `RequireAdmin` → `RequireCheckedIn`, igual que `/dashboard`) — página genérica que lee `tipo` con `useParams`, pide el reporte a `ListReporte` y renderiza título + tabla.
+- `CollapsibleMenu.jsx` — `items` pasó de `string[]` a `{label, to}[]`; ahora renderiza `NavLink` (cierra el menú al navegar) en vez de texto plano sin link. Cualquier otro uso futuro de este componente debe pasar objetos con esa forma.
+- `Navbar.jsx` — pasa a `CollapsibleMenu` los 3 links reales de Reportes (`/reportes/atrasos`, `/reportes/inasistencias`, `/reportes/salidas-anticipadas`); y agrega un `NavLink` **"Inicio"** → `/dashboard` (antes no había forma de volver al Dashboard desde `/reportes/:tipo` o `/empleados`).
+- `AuthContext.jsx` — sesión persistida en `localStorage` (clave `auth_user`) cuando `login(username, password, remember)` recibe `remember: true`; se lee con un lazy initializer en `useState` al montar `AuthProvider`, y se limpia en `logout()`. Solo persiste `user`, no `isChecking` (recargar la página mantiene la sesión pero exige volver a marcar entrada en `/check`, a propósito). `Login.jsx` ahora pasa su estado `remember` como tercer argumento de `login(...)`.
+- `AuthContext.jsx` — `checking()`/`stopChecking()` dejaron de ser `async` (no tenían ningún `await` adentro).
+- `Dashboard.jsx` — se sacó el `<div>` wrapper vacío alrededor de la `<table>`; los dos placeholders "GRAFICO DE BARRAS"/"GRAFICO DE LINEAS" fueron reemplazados por gráficos reales de `recharts`: un `BarChart` "Asistencia de hoy" (cuenta `empleados` por estado) y un `LineChart` "Tendencia semanal de asistencia" (mock local `tendenciaSemanal`, aún sin service). Ambos `<Card>` llevan `className="max-w-none!"` para anular el `max-w-md` que trae `Card.jsx` por defecto (pensado para tarjetas de login), y así ocupar todo el ancho de su columna en el grid.
+- Fuente: `@fontsource/montserrat` instalado e importado en `main.jsx` (400/600/700); `App.css` agrega `body { font-family: var(--font-principal); }` para que toda la app la herede por defecto sin depender de poner `font-principal` en cada elemento.
 
 **Falta / próximos pasos:**
-1. Crear las 3 páginas/rutas de "Reportes" (R. atrasos, R. Inasistencia, R. Salidas ant.) o al menos placeholders, y decidir si `CollapsibleMenu` debe recibir items como `{label, to}` en vez de strings planos para poder navegar con `NavLink` (hoy son solo texto sin link).
-2. Pantalla de historial/registro de asistencia (si es distinta a los reportes anteriores).
-3. Persistir sesión en `localStorage` si el usuario marcó "Recordar mi sesión" (hoy el checkbox existe en la UI pero no tiene lógica asociada).
-4. Decidir y documentar si `checking()`/`stopChecking()` deberían dejar de ser `async` (no tienen ningún `await` adentro, es innecesario tal como están).
-5. Cuando el backend Django esté disponible, reemplazar el mock de `services/auth.js` por la llamada real (fetch/axios a la API), sin modificar `Login.jsx` ni `AuthContext.jsx`. Mismo criterio aplicará a `services/asistencia.js` (incluyendo el array mock de empleados de `Dashboard.jsx`) y a `services/emp.js` cuando el backend soporte el CRUD real de empleados.
-6. Evaluar librería de gráficos liviana (ej. `recharts`) para reemplazar los placeholders de "GRAFICO DE BARRAS" / "GRAFICO DE LINEAS" en `Dashboard.jsx`.
-7. Limpiar el `<div>` wrapper innecesario alrededor de la `<table>` en `Dashboard.jsx` (no aporta nada, la tabla podría ir directo dentro de `<main>`).
-8. Si se agregan estados de éxito/error distintos a los toasts, sumar esos tipos (`success`/`error`) al diccionario `typeStyles` de `Toast.jsx` — hoy `Empleados.jsx` usa `'info'` para todo a falta de esos tipos.
+1. Pantalla de historial/registro de asistencia, si se necesita algo distinto a los reportes de `/reportes/:tipo`.
+2. Cuando el backend Django esté disponible: reemplazar `services/auth.js`, `services/emp.js` y `services/reportes.js` por llamadas reales, y crear `services/asistencia.js` para el mock de `empleados`/`asistenciaHoy`/`tendenciaSemanal` que hoy vive local en `Dashboard.jsx` — todo esto sin modificar componentes/páginas.
+3. Si se agregan estados de éxito/error distintos a los toasts, sumar esos tipos (`success`/`error`) al diccionario `typeStyles` de `Toast.jsx` — hoy `Empleados.jsx` usa `'info'` para todo a falta de esos tipos.

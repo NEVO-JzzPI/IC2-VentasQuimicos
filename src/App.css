@@ -18,3 +18,7 @@
   /* Fuentes */
   --font-principal: 'Montserrat', sans-serif;
 }
+
+body {
+  font-family: var(--font-principal);
+}
