@@ -38,7 +38,7 @@ export default function Check() {
                 </Button>
                 <Button className="mt-4 basis-lg py-5 text-xl hover:bg-botonhover/60" disabled={!isChecking} onClick={() => {  
                     stopChecking();
-                    
+                    navigate('/')
                     showToast('Salida registrada', 'salidas'); }}>
                     Salida
                 </Button>

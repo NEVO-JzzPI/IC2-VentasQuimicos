@@ -2,8 +2,8 @@
 // Reemplazar por llamadas reales cuando el backend esté listo, sin tocar Reporte.jsx.
 
 const atrasos = [
-    { id: 1, nombre: 'Juan Pérez', cargo: 'Operario', hora: '08:23' },
-    { id: 2, nombre: 'Ana Torres', cargo: 'Vendedora', hora: '08:41' },
+    { id: 1, nombre: 'Juan Pérez', cargo: 'Operario', hora: '09:47', fecha: '2026-09-11' },
+    { id: 2, nombre: 'Ana Torres', cargo: 'Vendedora', hora: '10:05', fecha: '2026-09-12' },
 ];
 
 const inasistencias = [
@@ -12,13 +12,33 @@ const inasistencias = [
 ];
 
 const salidasAnticipadas = [
-    { id: 1, nombre: 'Carlos Ruiz', cargo: 'Bodeguero', hora: '16:10' },
+    { id: 1, nombre: 'Carlos Ruiz', cargo: 'Bodeguero', hora: '16:10', fecha: '2026-09-11' },
 ];
 
 const reportes = {
-    atrasos: { titulo: 'Reporte de Atrasos', columnaExtra: 'Hora de llegada', data: atrasos, campo: 'hora' },
-    inasistencias: { titulo: 'Reporte de Inasistencia', columnaExtra: 'Fecha', data: inasistencias, campo: 'fecha' },
-    'salidas-anticipadas': { titulo: 'Reporte de Salidas Anticipadas', columnaExtra: 'Hora de salida', data: salidasAnticipadas, campo: 'hora' },
+    atrasos: {
+        titulo: 'Reporte de Atrasos',
+        data: atrasos,
+        columnas: [
+            { label: 'Hora de llegada', campo: 'hora' },
+            { label: 'Fecha', campo: 'fecha' },
+        ],
+    },
+    inasistencias: {
+        titulo: 'Reporte de Inasistencia',
+        data: inasistencias,
+        columnas: [
+            { label: 'Fecha', campo: 'fecha' },
+        ],
+    },
+    'salidas-anticipadas': {
+        titulo: 'Reporte de Salidas Anticipadas',
+        data: salidasAnticipadas,
+        columnas: [
+            { label: 'Hora de salida', campo: 'hora' },
+            { label: 'Fecha', campo: 'fecha' },
+        ],
+    },
 };
 
 export function ListReporte(tipo) {

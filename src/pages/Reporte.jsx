@@ -33,7 +33,9 @@ export default function Reporte() {
                                 <tr className="text-left border-b border-letra-secundario/20">
                                     <th className="p-3 font-principal">Nombre</th>
                                     <th className="p-3 font-principal">Cargo</th>
-                                    <th className="p-3 font-principal">{reporte.columnaExtra}</th>
+                                    {reporte.columnas.map((col) => (
+                                        <th key={col.campo} className="p-3 font-principal">{col.label}</th>
+                                    ))}
                                 </tr>
                             </thead>
                             <tbody>
@@ -41,12 +43,14 @@ export default function Reporte() {
                                     <tr key={persona.id} className="border-b border-letra-secundario/10">
                                         <td className="p-3">{persona.nombre}</td>
                                         <td className="p-3">{persona.cargo}</td>
-                                        <td className="p-3">{persona[reporte.campo]}</td>
+                                        {reporte.columnas.map((col) => (
+                                            <td key={col.campo} className="p-3">{persona[col.campo]}</td>
+                                        ))}
                                     </tr>
                                 ))}
                                 {reporte.data.length === 0 && (
                                     <tr>
-                                        <td className="p-3 text-letra-secundario" colSpan={3}>Sin registros</td>
+                                        <td className="p-3 text-letra-secundario" colSpan={2 + reporte.columnas.length}>Sin registros</td>
                                     </tr>
                                 )}
                             </tbody>
