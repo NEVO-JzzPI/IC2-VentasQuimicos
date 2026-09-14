@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 export default function Login() {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [remember, setRemember] = useState(false);
     // Guarda el mensaje de error 
@@ -28,7 +28,7 @@ export default function Login() {
         setLoading(true);  // petición en proceso
 
         try {
-            await login(username, password, remember);
+            await login(email, password, remember);
             
             navigate('/check');  // redirigir a la página de verificación
         } catch (err) {
@@ -49,15 +49,16 @@ export default function Login() {
             <form onSubmit={handleSubmit} className="text-letra-secundario">
 
                 <div className="space-y-1">
-                    <label className="mb-1 block text-sm font-medium " htmlFor="username">Usuario</label>
+                    <label className="mb-1 block text-sm font-medium " htmlFor="email">Correo</label>
                     <input
-                        id="username" 
-                        type="text" 
-                        autoComplete="username"
+                        id="email"
+                        type="email"
+                        autoComplete="email"
+                        placeholder="correo@empresa.cl"
                         required
                         className="w-full rounded-lg border border-black px-4 py-2 placeholder-gray-400 outline-none transition focus:border-checkboxtrueorinpt focus:ring-2 focus:ring-checkboxtrueorinpt mb-3.5"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                     />
                 </div>
 
@@ -99,8 +100,6 @@ export default function Login() {
                     <p className="text-red-600 text-sm mb-3.5">{error}</p>
                 )}
 
-                { console.log(loading) }
-                
                 <Button type="submit" disabled={loading} >
                     {loading ? 'Ingresando...' : 'Iniciar Sesión'}
                 </Button>

@@ -12,8 +12,8 @@ export function AuthProvider({ children }) {
 
   const [isChecking, setIsChecking] = useState(false)
 
-  const login = async (username, password, remember) => {
-    const { user } = await loginService(username, password)
+  const login = async (email, password, remember) => {
+    const { user } = await loginService(email, password)
     setUser(user)
     if (remember) {
       localStorage.setItem('auth_user', JSON.stringify(user))
