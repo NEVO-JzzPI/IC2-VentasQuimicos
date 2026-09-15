@@ -27,24 +27,24 @@ export default function Reporte() {
                 {error && <p className="font-principal text-botonprincipal">{error}</p>}
                 {reporte && (
                     <>
-                        <h1 className="text-xl font-principal font-bold text-letra mb-4">{reporte.titulo}</h1>
-                        <table className="w-full bg-secundario rounded-lg overflow-hidden">
+                        <h1 className="text-xl font-rotulo font-semibold uppercase tracking-wide text-letra mb-4">{reporte.titulo}</h1>
+                        <table className="w-full bg-secundario rounded-lg border border-letra/10 overflow-hidden">
                             <thead>
-                                <tr className="text-left border-b border-letra-secundario/20">
-                                    <th className="p-3 font-principal">Nombre</th>
-                                    <th className="p-3 font-principal">Cargo</th>
+                                <tr className="text-left border-b border-letra/10">
+                                    <th className="p-3 font-rotulo text-xs uppercase tracking-wide text-letra-secundario">Nombre</th>
+                                    <th className="p-3 font-rotulo text-xs uppercase tracking-wide text-letra-secundario">Cargo</th>
                                     {reporte.columnas.map((col) => (
-                                        <th key={col.campo} className="p-3 font-principal">{col.label}</th>
+                                        <th key={col.campo} className="p-3 font-rotulo text-xs uppercase tracking-wide text-letra-secundario">{col.label}</th>
                                     ))}
                                 </tr>
                             </thead>
                             <tbody>
-                                {reporte.data.map((persona) => (
-                                    <tr key={persona.id} className="border-b border-letra-secundario/10">
+                                {reporte.data.map((persona, i) => (
+                                    <tr key={persona.id} className={`border-b border-letra-secundario/10 ${i % 2 === 1 ? 'bg-bg/40' : ''}`}>
                                         <td className="p-3">{persona.nombre}</td>
-                                        <td className="p-3">{persona.cargo}</td>
+                                        <td className="p-3 text-letra-secundario">{persona.cargo}</td>
                                         {reporte.columnas.map((col) => (
-                                            <td key={col.campo} className="p-3">{persona[col.campo]}</td>
+                                            <td key={col.campo} className="p-3 font-dato text-sm text-letra-secundario">{persona[col.campo]}</td>
                                         ))}
                                     </tr>
                                 ))}

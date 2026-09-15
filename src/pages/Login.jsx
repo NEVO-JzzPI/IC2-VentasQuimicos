@@ -41,9 +41,10 @@ export default function Login() {
 
     return (
         <div className="flex min-h-screen items-center justify-center">
-        <Card>
+        <Card className="relative overflow-hidden before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-checkboxtrueorinpt">
             <div>
-                <h2 className="text-3xl font-bold">Iniciar Sesión</h2>
+                <p className="font-rotulo text-xs font-semibold uppercase tracking-[0.2em] text-checkboxtrueorinpt">Acceso de personal</p>
+                <h2 className="mt-1 font-rotulo text-3xl font-semibold uppercase tracking-wide">Iniciar Sesión</h2>
                 <p className="mt-2 text-sm">Ingresa tus credenciales para acceder</p>
             </div>
             <form onSubmit={handleSubmit} className="text-letra-secundario">
@@ -56,7 +57,7 @@ export default function Login() {
                         autoComplete="email"
                         placeholder="correo@empresa.cl"
                         required
-                        className="w-full rounded-lg border border-black px-4 py-2 placeholder-gray-400 outline-none transition focus:border-checkboxtrueorinpt focus:ring-2 focus:ring-checkboxtrueorinpt mb-3.5"
+                        className="w-full rounded-md border border-letra/25 px-4 py-2 placeholder-gray-400 outline-none transition focus:border-checkboxtrueorinpt focus:ring-2 focus:ring-checkboxtrueorinpt mb-3.5"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
@@ -73,12 +74,12 @@ export default function Login() {
                             ¿La olvidaste?
                         </button>
                     </div>
-                    <input 
+                    <input
                         id="password"
-                        type="password" 
-                        placeholder="••••••••" 
+                        type="password"
+                        placeholder="••••••••"
                         required
-                        className="w-full rounded-lg border border-black px-4 py-2  placeholder-black-400 outline-none transition focus:border-checkboxtrueorinpt focus:ring-2 focus:ring-checkboxtrueorinpt mb-3.5"
+                        className="w-full rounded-md border border-letra/25 px-4 py-2  placeholder-black-400 outline-none transition focus:border-checkboxtrueorinpt focus:ring-2 focus:ring-checkboxtrueorinpt mb-3.5"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />

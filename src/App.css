@@ -2,8 +2,7 @@
 
 @theme {
 
-  /* Paleta de colores */
- 
+  /* Paleta de colores (base original intacta) */
 
   --color-letra: #1C1C1C;
   --color-letra-secundario: #6B6B6B;
@@ -12,11 +11,16 @@
   --color-botonprincipal:  #D25D7F;
   --color-botonhover:#C14A6E;
   --color-checkboxtrueorinpt: #7A8450;
-  
 
+  /* Paleta ampliada — dirección "ficha técnica industrial" (ver CAMBIOS_DISENO.md) */
+  --color-panel-oscuro: #201F1C;
+  --color-panel-oscuro-borde: #35332D;
+  --color-acento-hazard: #C99A2E;
 
   /* Fuentes */
   --font-principal: 'Montserrat', sans-serif;
+  --font-rotulo: 'Oswald', sans-serif;
+  --font-dato: 'JetBrains Mono', monospace;
 }
 
 body {
