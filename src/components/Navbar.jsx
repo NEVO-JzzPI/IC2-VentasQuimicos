@@ -13,7 +13,7 @@ export default function Navbar() {
     }
 
     return (
-        <nav className="flex items-center justify-between h-16 w-full bg-secundario border-b border-letra/10 px-6">
+        <nav className="flex items-center justify-between h-16 w-full bg-secundario border-b border-letra px-6">
             <div className="flex items-center gap-8">
                 <NavLink
                     to="/dashboard"

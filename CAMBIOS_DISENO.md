@@ -193,3 +193,13 @@ Si no se quiere el rediseño completo, estas son las piezas más "portables" por
 4. Los 3 tokens de color nuevos son opcionales: si solo se lleva el punto 1, se necesita
    `--color-panel-oscuro`, `--color-panel-oscuro-borde` y `--color-acento-hazard`; los
    puntos 2 y 3 no los requieren.
+
+# Cambios propios
+
+## 'src/pages/Check.jsx'
+- Cambie el fondo de card a blanco y el del reloj a plomo (bg-bg/40)
+- Reajuste los bordes hasta quedar parejos.
+- Cambie colo a verde 'checkboxtrueorinpt' las letras de marcar asistencia.
+
+## Nabvar
+- Se quito el color de borde /10 a uno normal
