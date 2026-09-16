@@ -28,9 +28,9 @@ export default function Reporte() {
                 {reporte && (
                     <>
                         <h1 className="text-xl font-rotulo font-semibold uppercase tracking-wide text-letra mb-4">{reporte.titulo}</h1>
-                        <table className="w-full bg-secundario rounded-lg border border-letra/10 overflow-hidden">
-                            <thead>
-                                <tr className="text-left border-b border-letra/10">
+                        <table className="w-full rounded-lg border border-letra/10 overflow-hidden">
+                            <thead >
+                                <tr className="bg-white text-left border-b border-letra/10 font-bold">
                                     <th className="p-3 font-rotulo text-xs uppercase tracking-wide text-letra-secundario">Nombre</th>
                                     <th className="p-3 font-rotulo text-xs uppercase tracking-wide text-letra-secundario">Cargo</th>
                                     {reporte.columnas.map((col) => (
@@ -40,7 +40,7 @@ export default function Reporte() {
                             </thead>
                             <tbody>
                                 {reporte.data.map((persona, i) => (
-                                    <tr key={persona.id} className={`border-b border-letra-secundario/10 ${i % 2 === 1 ? 'bg-bg/40' : ''}`}>
+                                    <tr key={persona.id} className="border-b border-letra-secundario/10 bg-checkboxtrueorinpt/30 hover:bg-checkboxtrueorinpt/40 font-bold">
                                         <td className="p-3">{persona.nombre}</td>
                                         <td className="p-3 text-letra-secundario">{persona.cargo}</td>
                                         {reporte.columnas.map((col) => (

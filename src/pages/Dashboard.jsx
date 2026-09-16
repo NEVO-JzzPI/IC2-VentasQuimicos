@@ -53,9 +53,9 @@ export default function Dashboard() {
                         </ResponsiveContainer>
                     </Card>
                 </div>
-                <table className="w-full mt-6 bg-secundario rounded-lg border border-letra/10 overflow-hidden">
+                <table className="w-full mt-6 bg-secundario rounded-lg ">
                     <thead>
-                        <tr className="text-left border-b border-letra/10">
+                        <tr className="text-left border rounded-t-lg font-bold ">
                             <th className="p-3 font-rotulo text-xs uppercase tracking-wide text-letra-secundario">Nombre</th>
                             <th className="p-3 font-rotulo text-xs uppercase tracking-wide text-letra-secundario">Cargo</th>
                             <th className="p-3 font-rotulo text-xs uppercase tracking-wide text-letra-secundario">Asistencia</th>
@@ -63,10 +63,10 @@ export default function Dashboard() {
                     </thead>
                     <tbody>
                         {empleados.map((emp, i) => (
-                            <tr key={emp.id} className={`border-b border-letra-secundario/10 ${i % 2 === 1 ? 'bg-bg/40' : ''}`}>
-                                <td className="p-3">{emp.nombre}</td>
-                                <td className="p-3 text-letra-secundario">{emp.cargo}</td>
-                                <td className="p-3"><AsistenciaBadge estado={emp.asistencia} /></td>
+                            <tr key={emp.id} className="border border-letra-secundario bg-checkboxtrueorinpt/30 font-bold hover:bg-checkboxtrueorinpt/40">
+                                <td className=" p-4">{emp.nombre}</td>
+                                <td className="p-4 text-letra-secundario">{emp.cargo}</td>
+                                <td className="p-4"><AsistenciaBadge estado={emp.asistencia} /></td>
                             </tr>
                         ))}
                     </tbody>
