@@ -62,7 +62,7 @@ export default function Dashboard() {
                         </tr>
                     </thead>
                     <tbody>
-                        {empleados.map((emp, i) => (
+                        {empleados.map((emp) => (
                             <tr key={emp.id} className="border border-letra-secundario bg-checkboxtrueorinpt/30 font-bold hover:bg-checkboxtrueorinpt/40">
                                 <td className=" p-4">{emp.nombre}</td>
                                 <td className="p-4 text-letra-secundario">{emp.cargo}</td>

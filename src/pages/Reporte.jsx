@@ -39,7 +39,7 @@ export default function Reporte() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {reporte.data.map((persona, i) => (
+                                {reporte.data.map((persona) => (
                                     <tr key={persona.id} className="border-b border-letra-secundario/10 bg-checkboxtrueorinpt/30 hover:bg-checkboxtrueorinpt/40 font-bold">
                                         <td className="p-3">{persona.nombre}</td>
                                         <td className="p-3 text-letra-secundario">{persona.cargo}</td>
