@@ -29,7 +29,7 @@ export default function Dashboard() {
             <main className="p-6">
                 <div className="grid grid-cols-2 gap-4">
                     <Card className="max-w-none!">
-                        <h2 className="font-principal font-bold text-letra mb-2">Asistencia de hoy</h2>
+                        <h2 className="font-rotulo uppercase tracking-wide text-letra mb-2">Asistencia de hoy</h2>
                         <ResponsiveContainer width="100%" height={220}>
                             <BarChart data={asistenciaHoy}>
                                 <CartesianGrid strokeDasharray="3 3" />
@@ -41,7 +41,7 @@ export default function Dashboard() {
                         </ResponsiveContainer>
                     </Card>
                     <Card className="max-w-none!">
-                        <h2 className="font-principal font-bold text-letra mb-2">Tendencia semanal de asistencia</h2>
+                        <h2 className="font-rotulo uppercase tracking-wide text-letra mb-2">Tendencia semanal de asistencia</h2>
                         <ResponsiveContainer width="100%" height={220}>
                             <LineChart data={tendenciaSemanal}>
                                 <CartesianGrid strokeDasharray="3 3" />
@@ -53,20 +53,20 @@ export default function Dashboard() {
                         </ResponsiveContainer>
                     </Card>
                 </div>
-                <table className="w-full mt-6 bg-secundario rounded-lg overflow-hidden">
+                <table className="w-full mt-6 bg-secundario rounded-lg ">
                     <thead>
-                        <tr className="text-left border-b border-letra-secundario/20">
-                            <th className="p-3 font-principal">Nombre</th>
-                            <th className="p-3 font-principal">Cargo</th>
-                            <th className="p-3 font-principal">Asistencia</th>
+                        <tr className="text-left border rounded-t-lg font-bold ">
+                            <th className="p-3 font-rotulo text-xs uppercase tracking-wide text-letra-secundario">Nombre</th>
+                            <th className="p-3 font-rotulo text-xs uppercase tracking-wide text-letra-secundario">Cargo</th>
+                            <th className="p-3 font-rotulo text-xs uppercase tracking-wide text-letra-secundario">Asistencia</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {empleados.map((emp) => (
-                            <tr key={emp.id} className="border-b border-letra-secundario/10">
-                                <td className="p-3">{emp.nombre}</td>
-                                <td className="p-3">{emp.cargo}</td>
-                                <td className="p-3"><AsistenciaBadge estado={emp.asistencia} /></td>
+                        {empleados.map((emp, i) => (
+                            <tr key={emp.id} className="border border-letra-secundario bg-checkboxtrueorinpt/30 font-bold hover:bg-checkboxtrueorinpt/40">
+                                <td className=" p-4">{emp.nombre}</td>
+                                <td className="p-4 text-letra-secundario">{emp.cargo}</td>
+                                <td className="p-4"><AsistenciaBadge estado={emp.asistencia} /></td>
                             </tr>
                         ))}
                     </tbody>

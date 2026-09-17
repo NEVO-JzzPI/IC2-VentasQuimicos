@@ -13,12 +13,12 @@ export default function Navbar() {
     }
 
     return (
-        <nav className="flex items-center justify-between h-16 w-full bg-checkboxtrueorinpt/80 px-6">
-            <div className="flex items-center gap-6">
+        <nav className="flex items-center justify-between h-16 w-full bg-secundario border-b border-letra px-6">
+            <div className="flex items-center gap-8">
                 <NavLink
                     to="/dashboard"
                     className={({ isActive }) =>
-                        `font-principal ${isActive ? 'text-botonprincipal font-bold' : 'text-secundario'}`
+                        `font-rotulo text-sm uppercase tracking-wide transition-colors ${isActive ? 'text-botonprincipal font-semibold' : 'text-letra-secundario hover:text-letra'}`
                     }
                 >
                     Inicio
@@ -34,7 +34,7 @@ export default function Navbar() {
                 <NavLink
                     to="/empleados"
                     className={({ isActive }) =>
-                        `font-principal ${isActive ? 'text-botonprincipal font-bold' : 'text-secundario'}`
+                        `font-rotulo text-sm uppercase tracking-wide transition-colors ${isActive ? 'text-botonprincipal font-semibold' : 'text-letra-secundario hover:text-letra'}`
                     }
                 >
                     Gestion de Empleados

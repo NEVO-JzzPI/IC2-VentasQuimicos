@@ -7,10 +7,10 @@ const typeStyles = {
 export default function Toast({ message, type = 'info' }) {
   return (
     <div
-      className={`flex items-center justify-between gap-4 rounded-lg border px-4 py-3 shadow-lg font-principal text-sm ${typeStyles[type]}`}
+      className={`flex items-center justify-between gap-4 rounded-md border-l-4 border-y border-r px-4 py-3 shadow-lg font-principal text-sm ${typeStyles[type]}`}
       >
       <span>{message}</span>
-      
+
     </div>
   )
 }
