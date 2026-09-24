@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { login as loginService } from '../services/auth'
 import { AuthContext } from './auth-context.js'
+import { registrarAsistencia } from '../services/asistencia.js'
 
 //el provider que envuelve la app y provee el contexto
 export function AuthProvider({ children }) {
@@ -26,16 +27,21 @@ export function AuthProvider({ children }) {
     setUser(null)
     setIsChecking(false)
     localStorage.removeItem('auth_user')
+    // Tokens JWT guardados por services/auth.js / usados por services/api.js
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
   }
 
 
-  const checking = () => {
-    setIsChecking(true)
-  }
+ const checking = async () => {
+  await registrarAsistencia(user.id, 'ingreso')
+  setIsChecking(true)
+}
 
-  const stopChecking = () => {
-    setIsChecking(false)
-  }
+const stopChecking = async () => {
+  await registrarAsistencia(user.id, 'salida')
+  setIsChecking(false)
+}
 
   const value = { user, login, logout, checking, stopChecking, isChecking }
 
