@@ -35,17 +35,26 @@ export default function Check() {
             </div>
             <div className="flex flex-row gap-6 mt-8">
                 <Button className="mt-4 basis-lg py-5 text-xl bg-checkboxtrueorinpt hover:bg-checkboxtrueorinpt/60" disabled={isChecking}
-                onClick={() =>{
-                    showToast('Entrada registrada', 'entradas');
-                    checking();
-                    if (user?.rol === 'admin') navigate('/dashboard');
+                onClick={async () =>{
+                    try {
+                        await checking();
+                        showToast('Entrada registrada', 'entradas');
+                        if (user?.rol === 'admin') navigate('/dashboard');
+                    } catch (err) {
+                        showToast(err.message ?? 'No se pudo registrar la entrada', 'info');
+                    }
                     }}>
                     ● Entrada
                 </Button>
-                <Button className="mt-4 basis-lg py-5 text-xl hover:bg-botonhover/60" disabled={!isChecking} onClick={() => {
-                    stopChecking();
-                    navigate('/')
-                    showToast('Salida registrada', 'salidas'); }}>
+                <Button className="mt-4 basis-lg py-5 text-xl hover:bg-botonhover/60" disabled={!isChecking} onClick={async () => {
+                    try {
+                        await stopChecking();
+                        navigate('/')
+                        showToast('Salida registrada', 'salidas');
+                    } catch (err) {
+                        showToast(err.message ?? 'No se pudo registrar la salida', 'info');
+                    }
+                    }}>
                     ● Salida
                 </Button>
             </div>

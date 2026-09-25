@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { login as loginService } from '../services/auth'
+import { login as loginService, logout as logoutService } from '../services/auth'
+import { registrarIngreso, registrarSalida } from '../services/asistencia'
 import { AuthContext } from './auth-context.js'
 
 //el provider que envuelve la app y provee el contexto
@@ -13,7 +14,7 @@ export function AuthProvider({ children }) {
   const [isChecking, setIsChecking] = useState(false)
 
   const login = async (email, password, remember) => {
-    const { user } = await loginService(email, password)
+    const { user } = await loginService(email, password, remember)
     setUser(user)
     if (remember) {
       localStorage.setItem('auth_user', JSON.stringify(user))
@@ -23,17 +24,20 @@ export function AuthProvider({ children }) {
   }
 
   const logout = () => {
+    logoutService()
     setUser(null)
     setIsChecking(false)
     localStorage.removeItem('auth_user')
   }
 
 
-  const checking = () => {
+  const checking = async () => {
+    await registrarIngreso(user.id)
     setIsChecking(true)
   }
 
-  const stopChecking = () => {
+  const stopChecking = async () => {
+    await registrarSalida(user.id)
     setIsChecking(false)
   }
 

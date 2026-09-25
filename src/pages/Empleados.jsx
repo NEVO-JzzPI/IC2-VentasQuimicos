@@ -4,9 +4,9 @@ import Navbar from '../components/Navbar'
 import Card from '../components/Card'
 import Button from '../components/Button'
 import { useToast } from '../hooks/useToast'
-import { ListEmp, CreateEmp, UpdateEmp, DeleteEmp } from '../services/emp'
+import { ListEmp, CreateEmp, UpdateEmp, SetEmpActive } from '../services/emp'
 
-const FORM_VACIO = { usuario: '', nombre: '', direccion: '', cargo: '' }
+const FORM_VACIO = { email: '', name: '', firstLastname: '', position: '', password: '' }
 
 export default function Empleados() {
   const [empleados, setEmpleados] = useState([])
@@ -18,10 +18,11 @@ export default function Empleados() {
   const { showToast } = useToast()
 
   useEffect(() => {
-    ListEmp().then((data) => {
-      setEmpleados(data)
-      setLoading(false)
-    })
+    ListEmp()
+      .then((data) => setEmpleados(data))
+      .catch((err) => showToast(err.message ?? 'No se pudo cargar la lista de empleados', 'info'))
+      .finally(() => setLoading(false))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function openCreateModal() {
@@ -32,7 +33,7 @@ export default function Empleados() {
 
   function openEditModal(emp) {
     setEditingId(emp.id)
-    setForm({ usuario: emp.usuario, nombre: emp.nombre, direccion: emp.direccion, cargo: emp.cargo })
+    setForm({ email: emp.email, name: emp.name, firstLastname: emp.firstLastname ?? '', position: emp.position ?? '', password: '' })
     setIsModalOpen(true)
   }
 
@@ -61,14 +62,15 @@ export default function Empleados() {
     }
   }
 
-  async function handleDelete(emp) {
-    if (!confirm(`¿Eliminar a ${emp.nombre}?`)) return
+  async function handleToggleActive(emp) {
+    const accion = emp.isActive ? 'desactivar' : 'reactivar'
+    if (!confirm(`¿Seguro que quieres ${accion} a ${emp.name}?`)) return
     try {
-      await DeleteEmp(emp.id)
-      setEmpleados((prev) => prev.filter((e) => e.id !== emp.id))
-      showToast('Empleado eliminado', 'info')
+      const actualizado = await SetEmpActive(emp.id, !emp.isActive)
+      setEmpleados((prev) => prev.map((e) => (e.id === emp.id ? actualizado : e)))
+      showToast(`Empleado ${emp.isActive ? 'desactivado' : 'reactivado'}`, 'info')
     } catch (err) {
-      showToast(err.message ?? 'No se pudo eliminar el empleado', 'info')
+      showToast(err.message ?? `No se pudo ${accion} al empleado`, 'info')
     }
   }
 
@@ -91,19 +93,19 @@ export default function Empleados() {
               <thead>
                 <tr className="border-b border-letra/10">
                   <th className="p-3 font-rotulo text-xs uppercase tracking-wide text-letra-secundario">Nombre</th>
-                  <th className="p-3 font-rotulo text-xs uppercase tracking-wide text-letra-secundario">Usuario</th>
+                  <th className="p-3 font-rotulo text-xs uppercase tracking-wide text-letra-secundario">Email</th>
                   <th className="p-3 font-rotulo text-xs uppercase tracking-wide text-letra-secundario">Cargo</th>
-                  <th className="p-3 font-rotulo text-xs uppercase tracking-wide text-letra-secundario">Dirección</th>
+                  <th className="p-3 font-rotulo text-xs uppercase tracking-wide text-letra-secundario">Estado</th>
                   <th className="p-3 font-rotulo text-xs uppercase tracking-wide text-letra-secundario">Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {empleados.map((emp, i) => (
                   <tr key={emp.id} className={`border-b border-letra-secundario/10 ${i % 2 === 1 ? 'bg-bg/40' : ''}`}>
-                    <td className="p-3">{emp.nombre}</td>
-                    <td className="p-3 font-dato text-sm text-letra-secundario">{emp.usuario}</td>
-                    <td className="p-3 text-letra-secundario">{emp.cargo}</td>
-                    <td className="p-3 text-letra-secundario">{emp.direccion}</td>
+                    <td className="p-3">{[emp.name, emp.firstLastname].filter(Boolean).join(' ')}</td>
+                    <td className="p-3 font-dato text-sm text-letra-secundario">{emp.email}</td>
+                    <td className="p-3 text-letra-secundario">{emp.position ?? '—'}</td>
+                    <td className="p-3 text-letra-secundario">{emp.isActive ? 'Activo' : 'Inactivo'}</td>
                     <td className="p-3 space-x-3">
                       <button
                         type="button"
@@ -115,9 +117,9 @@ export default function Empleados() {
                       <button
                         type="button"
                         className="font-rotulo text-xs uppercase tracking-wide text-botonprincipal hover:underline"
-                        onClick={() => handleDelete(emp)}
+                        onClick={() => handleToggleActive(emp)}
                       >
-                        Eliminar
+                        {emp.isActive ? 'Desactivar' : 'Reactivar'}
                       </button>
                     </td>
                   </tr>
@@ -138,52 +140,65 @@ export default function Empleados() {
 
             <form onSubmit={handleSubmit} className="text-letra-secundario space-y-3.5">
               <div>
-                <label className="mb-1 block text-sm font-medium" htmlFor="usuario">Usuario</label>
+                <label className="mb-1 block text-sm font-medium" htmlFor="email">Email</label>
                 <input
-                  id="usuario"
-                  type="text"
+                  id="email"
+                  type="email"
                   required
                   className="w-full rounded-md border border-letra/25 px-4 py-2 outline-none transition focus:border-checkboxtrueorinpt focus:ring-2 focus:ring-checkboxtrueorinpt"
-                  value={form.usuario}
-                  onChange={(e) => setForm({ ...form, usuario: e.target.value })}
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
                 />
               </div>
 
               <div>
-                <label className="mb-1 block text-sm font-medium" htmlFor="nombre">Nombre</label>
+                <label className="mb-1 block text-sm font-medium" htmlFor="name">Nombre</label>
                 <input
-                  id="nombre"
+                  id="name"
                   type="text"
                   required
                   className="w-full rounded-md border border-letra/25 px-4 py-2 outline-none transition focus:border-checkboxtrueorinpt focus:ring-2 focus:ring-checkboxtrueorinpt"
-                  value={form.nombre}
-                  onChange={(e) => setForm({ ...form, nombre: e.target.value })}
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
                 />
               </div>
 
               <div>
-                <label className="mb-1 block text-sm font-medium" htmlFor="cargo">Cargo</label>
+                <label className="mb-1 block text-sm font-medium" htmlFor="firstLastname">Apellido</label>
                 <input
-                  id="cargo"
+                  id="firstLastname"
                   type="text"
                   required
                   className="w-full rounded-md border border-letra/25 px-4 py-2 outline-none transition focus:border-checkboxtrueorinpt focus:ring-2 focus:ring-checkboxtrueorinpt"
-                  value={form.cargo}
-                  onChange={(e) => setForm({ ...form, cargo: e.target.value })}
+                  value={form.firstLastname}
+                  onChange={(e) => setForm({ ...form, firstLastname: e.target.value })}
                 />
               </div>
 
               <div>
-                <label className="mb-1 block text-sm font-medium" htmlFor="direccion">Dirección</label>
+                <label className="mb-1 block text-sm font-medium" htmlFor="position">Cargo</label>
                 <input
-                  id="direccion"
+                  id="position"
                   type="text"
-                  required
                   className="w-full rounded-md border border-letra/25 px-4 py-2 outline-none transition focus:border-checkboxtrueorinpt focus:ring-2 focus:ring-checkboxtrueorinpt"
-                  value={form.direccion}
-                  onChange={(e) => setForm({ ...form, direccion: e.target.value })}
+                  value={form.position}
+                  onChange={(e) => setForm({ ...form, position: e.target.value })}
                 />
               </div>
+
+              {!editingId && (
+                <div>
+                  <label className="mb-1 block text-sm font-medium" htmlFor="password">Contraseña</label>
+                  <input
+                    id="password"
+                    type="password"
+                    required
+                    className="w-full rounded-md border border-letra/25 px-4 py-2 outline-none transition focus:border-checkboxtrueorinpt focus:ring-2 focus:ring-checkboxtrueorinpt"
+                    value={form.password}
+                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  />
+                </div>
+              )}
 
               <div className="flex gap-3 pt-2">
                 <Button type="button" className="bg-letra-secundario! hover:bg-letra!" onClick={closeModal}>
