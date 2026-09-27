@@ -114,5 +114,3 @@ Herramientas de desarrollo (`devDependencies`): **vite** (8) + `@vitejs/plugin-r
 
 **Falta / próximos pasos:**
 1. Pantalla de historial/registro de asistencia, si se necesita algo distinto a los reportes de `/reportes/:tipo`.
-2. Cuando el backend Django esté disponible: reemplazar `services/auth.js`, `services/emp.js` y `services/reportes.js` por llamadas reales, y crear `services/asistencia.js` para el mock de `empleados`/`asistenciaHoy`/`tendenciaSemanal` que hoy vive local en `Dashboard.jsx` — todo esto sin modificar componentes/páginas.
-3. Si se agregan estados de éxito/error distintos a los toasts, sumar esos tipos (`success`/`error`) al diccionario `typeStyles` de `Toast.jsx` — hoy `Empleados.jsx` usa `'info'` para todo a falta de esos tipos.
