@@ -76,3 +76,50 @@ export async function resumenHoy() {
     throw new Error(extractErrorMessage(err, 'No se pudo cargar el resumen de asistencia'), { cause: err })
   }
 }
+
+// Estado de hoy del usuario logueado. 
+// habilitar: desde 2026-09-25 el backend valida el orden de las marcas, así
+// un booleano local (que se pierde al recargar) ya no alcanza.
+// `next` es 'ingreso' | 'salida' | null (null = ya salió y sin permiso de reingreso).
+export async function estadoHoy() {
+  try {
+    const { data } = await api.get('/assistance_api/assistances/today-status/')
+    return data
+  } catch (err) {
+    throw new Error(extractErrorMessage(err, 'No se pudo cargar el estado de asistencia de hoy'), { cause: err })
+  }
+}
+
+// Horario laboral de la empresa (uno solo para todos). Lectura: cualquier
+// autenticado. `entry_time` / `exit_time` en formato 'HH:MM:SS'.
+export async function obtenerHorario() {
+  try {
+    const { data } = await api.get('/assistance_api/schedule/')
+    return data
+  } catch (err) {
+    throw new Error(extractErrorMessage(err, 'No se pudo cargar el horario laboral'), { cause: err })
+  }
+}
+
+// Solo admin. Cambia el horario; no reescribe los flags de registros ya guardados.
+export async function actualizarHorario({ entryTime, exitTime }) {
+  try {
+    const { data } = await api.patch('/assistance_api/schedule/', {
+      ...(entryTime && { entry_time: entryTime }),
+      ...(exitTime && { exit_time: exitTime }),
+    })
+    return data
+  } catch (err) {
+    throw new Error(extractErrorMessage(err, 'No se pudo actualizar el horario laboral'), { cause: err })
+  }
+}
+
+// Solo admin. Autoriza UN reingreso hoy a un empleado cuya última marca es salida.
+export async function autorizarReingreso(userId) {
+  try {
+    const { data } = await api.post('/assistance_api/assistances/allow-reentry/', { user: userId })
+    return data
+  } catch (err) {
+    throw new Error(extractErrorMessage(err, 'No se pudo autorizar el reingreso'), { cause: err })
+  }
+}

@@ -1,14 +1,17 @@
 // El backend no expone reportes de atrasos/inasistencias/salidas-anticipadas
 // como endpoints propios todavía (specs/002, 003, 004 — estado "Pendiente" o
-// "Parcial"). Las specs sí definen la regla de negocio exacta, así que la
-// aplicamos aquí cruzando /assistance_api/assistances/ con /accounts_api/users/,
+// "Parcial"), así que se arman aquí a partir de /assistance_api/assistances/,
 // sin tocar Reporte.jsx.
+//
+// Desde 2026-09-25 los registros traen los flags `delay` y `early_exit` ya
+// calculados contra el horario configurable de la empresa (9:30 / 17:30 por
+// defecto, /assistance_api/schedule/), y además `name` y `position`. Por eso
+// atrasos y salidas anticipadas ya no recalculan el umbral a mano ni necesitan
+// cruzar con /accounts_api/users/; inasistencias sí, porque requiere saber
+// quién NO marcó.
 import { listarRegistros } from './asistencia'
 import { ListEmp } from './emp'
 import { extractErrorMessage } from './api'
-
-const ATRASO_THRESHOLD = '09:30:00' // specs/002: atraso = ingreso estrictamente posterior a las 9:30
-const SALIDA_TEMPRANA_THRESHOLD = '17:30:00' // specs/003: salida estrictamente antes de las 17:30
 
 async function buildUserLookup() {
   const empleados = await ListEmp()
@@ -50,18 +53,14 @@ export async function ListReporte(tipo) {
   }
 
   try {
-    const [registros, lookup] = await Promise.all([listarRegistros(), buildUserLookup()])
-    const persona = (userId) => {
-      const info = lookup.get(userId)
-      return { nombre: info?.nombre ?? `Usuario #${userId}`, cargo: info?.cargo ?? null }
-    }
+    const registros = await listarRegistros()
 
     if (tipo === 'atrasos') {
-      // El flag `delay` que calcula el backend usa un umbral de 9:00, no de
-      // 9:30 (brecha conocida, ver specs/002) — se recalcula acá con la regla real.
+      // `delay` lo marca el backend sobre el PRIMER ingreso del día contra
+      // `entry_time` del horario vigente (un reingreso nunca cuenta como atraso).
       const data = registros
-        .filter((r) => r.type === 'ingreso' && r.time > ATRASO_THRESHOLD)
-        .map((r) => ({ id: r.id, ...persona(r.user), hora: r.time, fecha: r.date }))
+        .filter((r) => r.type === 'ingreso' && r.delay)
+        .map((r) => ({ id: r.id, nombre: r.name, cargo: r.position, hora: r.time, fecha: r.date }))
       return {
         titulo: 'Reporte de Atrasos',
         data,
@@ -73,9 +72,24 @@ export async function ListReporte(tipo) {
     }
 
     if (tipo === 'salidas-anticipadas') {
-      const data = registros
-        .filter((r) => r.type === 'salida' && r.time < SALIDA_TEMPRANA_THRESHOLD)
-        .map((r) => ({ id: r.id, ...persona(r.user), hora: r.time, fecha: r.date }))
+      // `early_exit` lo marca el backend contra `exit_time` del horario vigente.
+      // Pero specs/003 exige considerar solo la ÚLTIMA salida de cada día: si el
+      // empleado salió, volvió con permiso de reingreso y salió de nuevo, esa
+      // salida intermedia queda con early_exit=True y no debe contar como
+      // salida anticipada (se fue temprano solo si su último egreso fue temprano).
+      const ultimaSalidaPorDia = new Map()
+      registros
+        .filter((r) => r.type === 'salida')
+        .forEach((r) => {
+          const clave = `${r.user}-${r.date}`
+          const previa = ultimaSalidaPorDia.get(clave)
+          if (!previa || r.time > previa.time) ultimaSalidaPorDia.set(clave, r)
+        })
+
+      const data = [...ultimaSalidaPorDia.values()]
+        .filter((r) => r.early_exit)
+        .sort((a, b) => (a.date === b.date ? a.time.localeCompare(b.time) : a.date.localeCompare(b.date)))
+        .map((r) => ({ id: r.id, nombre: r.name, cargo: r.position, hora: r.time, fecha: r.date }))
       return {
         titulo: 'Reporte de Salidas Anticipadas',
         data,
@@ -90,6 +104,7 @@ export async function ListReporte(tipo) {
     // tipo 'empleado'. Un `falta_anticipada` ese día la marca como justificada
     // (specs/004). El rango cubierto es el que ya tiene datos en /assistances/
     // — la API todavía no acepta un from/to explícito.
+    const lookup = await buildUserLookup()
     const fechas = [...new Set(registros.map((r) => r.date))]
     const diasHabiles = enumerarDiasHabiles(fechas)
 
