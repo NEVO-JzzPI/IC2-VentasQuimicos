@@ -1,6 +1,6 @@
 # Qué hace cada carpeta del proyecto
 
-Esta guía explica, de forma simple, para qué sirve cada carpeta dentro de `src/`. Al final hay una sección extra sobre `services/`, porque va a ser la carpeta más importante para ti cuando conectes el backend real (el que está haciendo el compañero en Django).
+Esta guía explica, de forma simple, para qué sirve cada carpeta dentro de `src/`. Al final hay una sección extra sobre `services/`
 
 Todo el código vive dentro de la carpeta `src/`:
 
@@ -10,7 +10,7 @@ src/
   components/
   features/
   hooks/
-  services/   ← la más importante para ti
+  services/   
   context/
   utils/
 ```
@@ -49,59 +49,8 @@ Funciones sueltas y simples que no dependen de React ni de la app en sí, solo h
 
 ## `services/` — la carpeta que vas a usar para conectar el backend
 
-Esta es **la carpeta clave** para tu trabajo. La idea del proyecto es la siguiente:
 
 > **Ningún componente ni página debe llamar directamente a `fetch` o a una API.** Todo pedido al backend (Django) tiene que pasar por un archivo de `services/`.
 
-¿Por qué se hace así? Porque si mañana cambia algo en el backend (una URL, el nombre de un campo, cómo se manda el token), **solo tienes que tocar el archivo de `services/`**, y ninguna pantalla se rompe ni hay que modificarla.
 
-### Cómo está organizado hoy
 
-Cada archivo de `services/` representa un "tema" y agrupa las funciones relacionadas:
-
-- **`auth.js`** → todo lo de iniciar sesión. Hoy tiene una función `login(email, password)` que **simula** lo que haría el backend: espera medio segundo (como si fuera una petición real) y devuelve un `token` falso más los datos del usuario. Cuando el backend esté listo, esta función se reemplaza por un `fetch`/`axios` real a algo como `POST /api/auth/login/`, pero la función se sigue llamando `login` y devolviendo lo mismo (`{ token, user }`) — así `Login.jsx` no se entera del cambio.
-
-- **`emp.js`** → todo lo de empleados (el CRUD). Tiene `ListEmp()`, `CreateEmp(datos)`, `UpdateEmp(id, datos)` y `DeleteEmp(id)`. Ahora mismo trabajan sobre una lista guardada en memoria (un array), pero cuando conectes el backend, cada una de estas funciones va a hacer una petición HTTP real (GET, POST, PUT/PATCH, DELETE) al endpoint de empleados de Django.
-
-- **`reportes.js`** → trae los datos de los reportes (atrasos, inasistencias, salidas anticipadas) con la función `ListReporte(tipo)`.
-
-### Cómo se ve el patrón (ejemplo simplificado)
-
-```js
-// services/auth.js — HOY (mock, sin backend)
-export async function login(email, password) {
-  await new Promise((resolve) => setTimeout(resolve, 500)) // simula espera de red
-  // busca el usuario en una lista falsa y devuelve { token, user }
-}
-```
-
-```js
-// services/auth.js — MAÑANA (con el backend Django real)
-export async function login(email, password) {
-  const respuesta = await fetch('https://tu-api-django.com/api/auth/login/', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
-  })
-
-  if (!respuesta.ok) {
-    throw new Error('Correo o contraseña incorrectos')
-  }
-
-  return respuesta.json() // debe devolver algo como { token, user }
-}
-```
-
-Lo importante: **el nombre de la función (`login`) y lo que devuelve no cambian**, solo cambia lo que pasa *adentro*. Así, `Login.jsx` (o cualquier otra pantalla) sigue funcionando exactamente igual sin tocar ni una línea.
-
-### Tu checklist para conectar el backend
-
-1. Pídele al compañero de Django la URL base de la API y la lista de endpoints disponibles (por ejemplo `/api/auth/login/`, `/api/empleados/`, `/api/reportes/`).
-2. Ve archivo por archivo dentro de `services/` (`auth.js`, `emp.js`, `reportes.js`) y reemplaza el contenido de cada función mock por un `fetch` (o `axios`, si se decide instalar) que llame al endpoint real, manteniendo el mismo nombre de función y la misma forma de la respuesta.
-3. Si necesitas mandar el token de sesión en cada petición (para las rutas protegidas), es buena idea centralizar eso en un archivo nuevo, por ejemplo `services/api.js`, con una función base que agregue el header `Authorization` automáticamente, y que los demás archivos de `services/` la usen.
-4. Prueba cada pantalla que use ese servicio (por ejemplo, después de cambiar `emp.js`, prueba `Empleados.jsx`) para confirmar que todo se sigue viendo y comportando igual.
-5. **No cambies nada en `pages/`, `components/` ni `context/`** solo por conectar el backend — si sientes que necesitas tocar una pantalla, probablemente el servicio no está devolviendo los datos en la forma que la pantalla espera, y ahí es donde hay que ajustar.
-
----
-
-Con esto ya tienes el mapa completo del proyecto. Cualquier duda sobre una carpeta en particular, revisa el archivo `CLAUDE.md` en la raíz, ahí está el detalle técnico de todo lo que se ha construido.
