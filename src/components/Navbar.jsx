@@ -39,6 +39,14 @@ export default function Navbar() {
                 >
                     Gestion de Empleados
                 </NavLink>
+                <NavLink
+                    to="/check"
+                    className={({ isActive }) =>
+                        `font-rotulo text-sm uppercase tracking-wide transition-colors ${isActive ? 'text-botonprincipal font-semibold' : 'text-letra-secundario hover:text-letra'}`
+                    }
+                >
+                    Marcar Asistencia
+                </NavLink>
             </div>
             <Button onClick={handleLogout} className="w-auto! px-6">
                 Cerrar Sesión

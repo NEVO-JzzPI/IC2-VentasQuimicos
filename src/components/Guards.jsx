@@ -23,7 +23,10 @@ export function RequireAdmin({ children }) {
 
 // Para check-in 
 export function RequireCheckedIn({ children }) {
-  const { isChecking } = useAuth()
+  const { isChecking, estadoCargando } = useAuth()
+  // Hay que esperar a que today-status/ responda: si redirigimos mientras
+  // carga, cualquier recarga de /dashboard expulsa a /check aunque ya marcó.
+  if (estadoCargando) return null
   if (!isChecking) return <Navigate to="/check" replace />
   return children
 }

@@ -1,31 +1,43 @@
-// Mock de autenticación mientras el backend Django no está listo.
-// Cuando el backend esté disponible, "login" se cambia para que llame a la API real
-// (ej. fetch a POST /api/auth/login/), sin tener que tocar el componente Login.
+// Autenticación real contra RegistroAsistencia API (JWT vía DRF Simplejwt).
+// login() hace /token/ + /accounts_api/users/me/ y devuelve un `user` con la
+// forma que ya esperaban los componentes (incluye `rol`, alias de `type`).
+import api, { setTokens, clearTokens, extractErrorMessage } from './api'
 
-// Lista de usuarios "de mentira" para poder probar el login sin backend
-const MOCK_USERS = [
-  { email: 'admin@empresa.cl', password: '1234', nombre: 'Admin Principal', rol: 'admin' },
-  { email: 'empleado@empresa.cl', password: '1234', nombre: 'Juan Pérez', rol: 'empleado' },
-]
-
-// Simula el login: recibe correo y contraseña, y responde como si fuera el servidor
-export async function login(email, password) {
-  // Espera medio segundo para simular el tiempo que tardaría una petición real
-  await new Promise((resolve) => setTimeout(resolve, 500))
-
-  // Busca si existe un usuario con ese correo y esa password (correo sin distinguir mayúsculas)
-  const user = MOCK_USERS.find(
-    (u) => u.email === email.trim().toLowerCase() && u.password === password
-  )
-
-  // Si no lo encontró, avisamos con un error (así funciona el catch en Login.jsx)
-  if (!user) {
-    throw new Error('Correo o contraseña incorrectos')
-  }
-
-  // Si lo encontró, devolvemos un token falso y los datos del usuario
+function mapUser(me) {
   return {
-    token: 'mock-token-123',
-    user: { email: user.email, nombre: user.nombre, rol: user.rol },
+    id: me.id,
+    name: me.name,
+    firstLastname: me.first_lastname,
+    nombre: [me.name, me.first_lastname].filter(Boolean).join(' '),
+    type: me.type,
+    // Guards.jsx compara contra 'admin'/'empleado'; el backend usa 'administrador'/'empleado'.
+    rol: me.type === 'administrador' ? 'admin' : 'empleado',
   }
+}
+
+export async function login(email, password, remember = false) {
+  let tokens
+  try {
+    const { data } = await api.post('/token/', { email, password })
+    tokens = data
+  } catch (err) {
+    if (err?.response?.status === 401) {
+      throw new Error('Correo o contraseña incorrectos', { cause: err })
+    }
+    throw new Error(extractErrorMessage(err, 'No se pudo iniciar sesión'), { cause: err })
+  }
+
+  setTokens(tokens, remember)
+
+  try {
+    const { data: me } = await api.get('/accounts_api/users/me/')
+    return { token: tokens.access, user: mapUser(me) }
+  } catch (err) {
+    clearTokens()
+    throw new Error(extractErrorMessage(err, 'No se pudo obtener el usuario autenticado'), { cause: err })
+  }
+}
+
+export function logout() {
+  clearTokens()
 }

@@ -9,7 +9,7 @@ export default function Check() {
     
     const navigate = useNavigate();
     const [now, setNow] = useState(new Date());
-    const{  user, checking, stopChecking, isChecking } = useAuth();
+    const{  user, checking, stopChecking, isChecking, puedeIngresar, estadoCargando } = useAuth();
     const { showToast } = useToast();
 
     useEffect(() => {
@@ -34,21 +34,38 @@ export default function Check() {
                 </p>
             </div>
             <div className="flex flex-row gap-6 mt-8">
-                <Button className="mt-4 basis-lg py-5 text-xl bg-checkboxtrueorinpt hover:bg-checkboxtrueorinpt/60" disabled={isChecking}
-                onClick={() =>{
-                    showToast('Entrada registrada', 'entradas');
-                    checking();
-                    if (user?.rol === 'admin') navigate('/dashboard');
+                <Button className="mt-4 basis-lg py-5 text-xl bg-checkboxtrueorinpt hover:bg-checkboxtrueorinpt/60" disabled={estadoCargando || !puedeIngresar}
+                onClick={async () =>{
+                    try {
+                        await checking();
+                        showToast('Entrada registrada', 'entradas');
+                        if (user?.rol === 'admin') navigate('/dashboard');
+                    } catch (err) {
+                        showToast(err.message ?? 'No se pudo registrar la entrada', 'info');
+                    }
                     }}>
                     ● Entrada
                 </Button>
-                <Button className="mt-4 basis-lg py-5 text-xl hover:bg-botonhover/60" disabled={!isChecking} onClick={() => {
-                    stopChecking();
-                    navigate('/')
-                    showToast('Salida registrada', 'salidas'); }}>
+                <Button className="mt-4 basis-lg py-5 text-xl hover:bg-botonhover/60" disabled={estadoCargando || !isChecking} onClick={async () => {
+                    try {
+                        await stopChecking();
+                        logout()
+                        navigate('/')
+                        showToast('Salida registrada', 'salidas');
+                    } catch (err) {
+                        showToast(err.message ?? 'No se pudo registrar la salida', 'info');
+                    }
+                    }}>
                     ● Salida
                 </Button>
             </div>
+
+            {!estadoCargando && !puedeIngresar && !isChecking && (
+                <p className="mt-6 text-sm text-letra-secundario">
+                    Ya cerraste tu jornada de hoy. Si necesitas volver a marcar entrada,
+                    pide a un administrador que autorice tu reingreso.
+                </p>
+            )}
 
         </Card>
         </div>
