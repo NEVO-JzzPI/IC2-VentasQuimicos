@@ -3,7 +3,7 @@ import api, { extractErrorMessage } from './api'
 
 // OJO: no usar toISOString() acá — convierte a UTC y en Chile de noche eso
 // ya cae en el día siguiente. Se arma la fecha con los componentes locales.
-function todayDate() {
+export function todayDate() {
   const now = new Date()
   const year = now.getFullYear()
   const month = String(now.getMonth() + 1).padStart(2, '0')
