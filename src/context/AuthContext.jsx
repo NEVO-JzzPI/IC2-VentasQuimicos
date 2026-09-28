@@ -29,12 +29,12 @@ export function AuthProvider({ children }) {
     let cancelado = false
     estadoHoy()
       .then((s) => {
-        if (!cancelado) setEstado({ userId: user.id, next: s.next })
+        if (!cancelado) setEstado({ userId: user.id, next: s.next, yaIngreso: !!s.ingreso })
       })
       .catch(() => {
         // Si today-status/ falla no dejamos al usuario bloqueado: se le permite
         // intentar marcar entrada y que el backend decida.
-        if (!cancelado) setEstado({ userId: user.id, next: 'ingreso' })
+        if (!cancelado) setEstado({ userId: user.id, next: 'ingreso', yaIngreso: false })
       })
 
     return () => {
@@ -66,20 +66,22 @@ export function AuthProvider({ children }) {
 
   const checking = async () => {
     await registrarIngreso(user.id)
-    setEstado({ userId: user.id, next: 'salida' })
+    setEstado({ userId: user.id, next: 'salida', yaIngreso: true })
   }
 
   const stopChecking = async () => {
     await registrarSalida(user.id)
-    setEstado({ userId: user.id, next: null })
+    setEstado({ userId: user.id, next: null, yaIngreso: true })
   }
 
   // isChecking conserva el nombre para no tocar a todos los consumidores;
   // ahora significa "tiene un ingreso abierto", según el backend.
   const isChecking = next === 'salida'
   const puedeIngresar = next === 'ingreso'
+  // Hubo al menos un ingreso hoy (aunque después haya marcado salida).
+  const yaIngreso = !!estadoVigente?.yaIngreso
 
-  const value = { user, login, logout, checking, stopChecking, isChecking, puedeIngresar, estadoCargando }
+  const value = { user, login, logout, checking, stopChecking, isChecking, puedeIngresar, yaIngreso, estadoCargando }
 
   return (
     <AuthContext.Provider value={value}>
